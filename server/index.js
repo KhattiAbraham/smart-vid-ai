@@ -13,7 +13,7 @@ app.use(express.json());
 // Endpoint to fetch YouTube comments
 app.get('/api/comments', async (req, res) => {
   const { videoId } = req.query;
-  const apiKey = 'AIzaSyBxYc3ZmzHSPqk3ruJdADNr4o4NK_APeI0';
+  const apiKey = process.env.YOUTUBE_API_KEY;
 
   if (!videoId) {
     return res.status(400).json({ error: 'Video ID is required' });
