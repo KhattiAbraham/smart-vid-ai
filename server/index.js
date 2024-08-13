@@ -13,7 +13,7 @@ app.use(express.json());
 // Endpoint to fetch YouTube comments
 app.get('/api/comments', async (req, res) => {
   const { videoId } = req.query;
-  const apiKey = process.env.YOUTUBE_API_KEY;
+  const apiKey = 'AIzaSyBxYc3ZmzHSPqk3ruJdADNr4o4NK_APeI0';
 
   if (!videoId) {
     return res.status(400).json({ error: 'Video ID is required' });
@@ -36,6 +36,13 @@ app.get('/api/comments', async (req, res) => {
           },
         }
       );
+      const comments = response.data.items;
+      comments.forEach(comment => {
+        const commentText = comment.snippet.topLevelComment.snippet.textDisplay;
+        const authorName = comment.snippet.topLevelComment.snippet.authorDisplayName;
+        console.log(`Author: ${authorName}, Comment: ${commentText}`);
+      });
+      
 
       allComments = [...allComments, ...response.data.items];
       nextPageToken = response.data.nextPageToken;
