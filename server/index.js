@@ -37,11 +37,16 @@ app.get('/api/comments', async (req, res) => {
         }
       );
       const comments = response.data.items;
+      const Data = [];
       comments.forEach(comment => {
         const commentText = comment.snippet.topLevelComment.snippet.textDisplay;
         const authorName = comment.snippet.topLevelComment.snippet.authorDisplayName;
-        console.log(`Author: ${authorName}, Comment: ${commentText}`);
+        Data.push({
+          author: authorName,
+          comment: commentText,
+        });
       });
+      console.log(Data);
       
 
       allComments = [...allComments, ...response.data.items];
