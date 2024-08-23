@@ -1,9 +1,21 @@
 import React, { useState } from "react";
 import useFetchYouTubeComments from "../components/hooks/useFetchYouTubeComments";
 
+// Function to clean comments
+const cleanComment = (comment) => {
+  // Remove <br> tags and trim the comment
+  return comment.replace(/<br\s*\/?>/gi, ' ').trim();
+};
+
+// Function to filter comments based on length
+const filterCommentsByLength = (comments, maxLength) => {
+  return comments.filter(comment => comment.comment.length <= maxLength);
+};
+
 const LinkInput = () => {
   const [videoUrl, setVideoUrl] = useState("");
   const [videoId, setVideoId] = useState(null);
+  const maxLength = 100; // Set your desired maximum length here
 
   const { data, loading, error } = useFetchYouTubeComments(videoId);
 
@@ -26,8 +38,30 @@ const LinkInput = () => {
     }
   };
 
+  // Categorize and clean comments
+  const categorizeComments = (comments) => {
+    const categories = ["Questions", "Appreciating", "Abusive"];
+    const categorized = {
+      Questions: [],
+      Appreciating: [],
+      Abusive: []
+    };
+
+    comments.forEach(comment => {
+      const cleanedComment = cleanComment(comment.comment);
+      if (categories.includes(comment.category)) {
+        categorized[comment.category].push({ ...comment, comment: cleanedComment });
+      }
+    });
+
+    return categorized;
+  };
+
+  const filteredData = data ? filterCommentsByLength(data.comments, maxLength) : [];
+  const categorizedComments = categorizeComments(filteredData);
+
   return (
-    <div className="youtube-comments max-w-2xl mx-auto p-4">
+    <div className="youtube-comments max-w-6xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">YouTube Comments Fetcher</h2>
       <div className="flex items-center mb-4">
         <input
@@ -51,13 +85,34 @@ const LinkInput = () => {
           <h3 className="text-lg font-semibold mb-4">
             Total Comments: {data.totalComments}
           </h3>
-          <div className="comments space-y-4">
-            {data.comments.map((comment) => (
-              <div key={comment.id} className="comment p-4 border border-gray-300 rounded-md">
-                <p className="font-bold">{comment.snippet.topLevelComment.snippet.authorDisplayName}:</p>
-                <div>{comment.snippet.topLevelComment.snippet.textDisplay}</div>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="category-section p-4 border border-gray-300 rounded-md">
+              <h4 className="text-xl font-semibold mb-2">Questions</h4>
+              {categorizedComments.Questions.map((comment, index) => (
+                <div key={index} className="comment p-2 border-b border-gray-200">
+                  <p className="font-bold">{comment.author}:</p>
+                  <p>{comment.comment}</p>
+                </div>
+              ))}
+            </div>
+            <div className="category-section p-4 border border-gray-300 rounded-md">
+              <h4 className="text-xl font-semibold mb-2">Appreciating</h4>
+              {categorizedComments.Appreciating.map((comment, index) => (
+                <div key={index} className="comment p-2 border-b border-gray-200">
+                  <p className="font-bold">{comment.author}:</p>
+                  <p>{comment.comment}</p>
+                </div>
+              ))}
+            </div>
+            <div className="category-section p-4 border border-gray-300 rounded-md">
+              <h4 className="text-xl font-semibold mb-2">Abusive</h4>
+              {categorizedComments.Abusive.map((comment, index) => (
+                <div key={index} className="comment p-2 border-b border-gray-200">
+                  <p className="font-bold">{comment.author}:</p>
+                  <p>{comment.comment}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </>
       )}
