@@ -3,19 +3,24 @@ import useFetchYouTubeComments from "../components/hooks/useFetchYouTubeComments
 
 // Function to clean comments
 const cleanComment = (comment) => {
-  // Remove <br> tags and trim the comment
-  return comment.replace(/<br\s*\/?>/gi, ' ').trim();
+  // Remove <br> tags, <a> tags, and trim the comment
+  return comment
+    .replace(/<br\s*\/?>/gi, ' ')        // Remove <br> tags
+    .replace(/<a[^>]*>([^<]*)<\/a>/gi, '$1') // Remove <a> tags
+    .trim();
 };
 
-// Function to filter comments based on length
-const filterCommentsByLength = (comments, maxLength) => {
-  return comments.filter(comment => comment.comment.length <= maxLength);
+// Function to filter comments based on length and links
+const filterComments = (comments, maxLength) => {
+  return comments
+    .filter(comment => !/<a\s+href=[^>]+>.*<\/a>/i.test(comment.comment)) // Remove comments with links
+    .filter(comment => comment.comment.length <= maxLength); // Remove comments exceeding maxLength
 };
 
 const LinkInput = () => {
   const [videoUrl, setVideoUrl] = useState("");
   const [videoId, setVideoId] = useState(null);
-  const maxLength = 100; // Set your desired maximum length here
+  const maxLength = 500; // Set your desired maximum length here
 
   const { data, loading, error } = useFetchYouTubeComments(videoId);
 
@@ -57,7 +62,7 @@ const LinkInput = () => {
     return categorized;
   };
 
-  const filteredData = data ? filterCommentsByLength(data.comments, maxLength) : [];
+  const filteredData = data ? filterComments(data.comments, maxLength) : [];
   const categorizedComments = categorizeComments(filteredData);
 
   return (
