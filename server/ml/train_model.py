@@ -4,7 +4,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 
 # Load your data (example)
-df = pd.read_csv('outputfile.csv')
+df = pd.read_csv('outputfile2.csv')
 X = df['comments']
 Y = df['category']
 
