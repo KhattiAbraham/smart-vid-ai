@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 // API Key
-const apiKey = process.env.YOUTUBE_API_KEY;
+const apiKey = "AIzaSyBxYc3ZmzHSPqk3ruJdADNr4o4NK_APeI0";
 if (!apiKey) {
   console.error('YouTube API key is missing in environment variables.');
   process.exit(1); // Exit if API key is not set
