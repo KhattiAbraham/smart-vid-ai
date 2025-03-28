@@ -1,4 +1,4 @@
-# SmartVid AI
+## SmartVid AI ##
 
 # Overview
 SmartVid AI is an AI-powered web application that predicts the future view count of YouTube videos. Users can input a YouTube video link into the search box, and the system generates visual statistics in the form of graphs, forecasting video views for the next 4 months and 6 months.
